@@ -36,6 +36,6 @@ void cm_two_points (void) {
 */
 
 void cm_two_points (void) {
-	at1 = SCREEN_BUFFER [cx1 + (cy1 & 15) << 4];
-	at2 = SCREEN_BUFFER [cx2 + (cy2 & 15) << 4];
+	at1 = behs [SCREEN_BUFFER [cx1 + ((cy1 & 15) << 4)]];
+	at2 = behs [SCREEN_BUFFER [cx2 + ((cy2 & 15) << 4)]];
 }

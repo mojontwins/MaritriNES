@@ -72,3 +72,7 @@ Sigo sin explicarme por qué el mapa está exportado aparte y no se incluye en u
 
 ~~
 
+Tras un buen ratito la he metido en cintura y funciona genial. Ahora puedo scrollear con RLE, el tiempo que ocupa de frame no es excesivo (aunque por ahora no puedo ir a más de 2 pixels por frame - ¡que es más que suficiente!), y luego he ido y le he puesto a la muñeca.
+
+Lo próximo será examinar las rutinas de enemigos del original e integrarlas. Ahora voy a subir a github y a parar.
+

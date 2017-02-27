@@ -14,10 +14,8 @@
 #include "assets/map0.h"
 #include "assets/palettes.h"
 #include "assets/tiledata.h"
-/*
 #include "assets/spritedata.h"
 #include "assets/spriteset.h"
-*/
 #include "assets/precalcs.h"
 #include "assets/behs.h"
 #include "assets/levelset.h"
@@ -39,7 +37,7 @@
 #include "engine/printer.h"
 #include "engine/scroller_rle.h"
 #include "engine/gbuffer.h"
-//#include "engine/player.h"
+#include "engine/player.h"
 #include "engine/game.h"
 
 void main (void) {

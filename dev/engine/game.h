@@ -16,7 +16,7 @@ void game_init (void) {
 	pal_bg  (level_pal_bg [level]);
 	pal_spr (level_pal_fg [level]);
 
-	//player_init ();
+	player_init ();
 }
 
 void game_loop (void) {
@@ -42,7 +42,6 @@ void game_loop (void) {
 		pad0 = pad_poll (0);
 
 		// Move camera?
-		/*
 		if (ppossee && pry < cam_pos + 120) {
 			is_scrolling = 1;
 			scroll_to = pry - 120;
@@ -51,11 +50,9 @@ void game_loop (void) {
 			scroll_advance (2);
 			if (cam_pos <= scroll_to) is_scrolling = 0;
 		}
-		*/
-		scroll_advance (2);
-
-		//player_move ();
-		//player_render ();
+		
+		player_move ();
+		player_render ();
 		
 		oam_hide_rest (oam_index);
 		

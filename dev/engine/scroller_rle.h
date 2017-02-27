@@ -82,14 +82,14 @@ void scroll_advance (unsigned char pixels) {
 		cam_pos_bit_3 = cam_pos & 0x08;
 
 		// Fill buffer
-		gpit = 16; for (gpit = 0; gpit < 16; gpit ++) rle_buffer [gpit] = scroll_get_byte ();
+		gbuffer_y = (gbuffer_y - 1) & 0x0f;
+		rle_buffer_ptr = gpq = SCREEN_BUFFER + (gbuffer_y << 4);
+		gpit = 16; while (gpit --) *gpq ++ = scroll_get_byte ();
 
 		// Init pointers
-		gbuffer_y = (gbuffer_y - 1) & 0x0f;
+
 		gpp = SCROLL_BUFFER;
 		gpr = ATTRIB_BUFFER;
-		gpq = SCREEN_BUFFER + (gbuffer_y << 4);
-		rle_buffer_ptr = rle_buffer;
 
 		// Relocate writers
 		scroll_writers_realloc ();
@@ -141,7 +141,7 @@ void scroll_advance (unsigned char pixels) {
 
 		case 3:
 			// Paint attributes
-			rle_buffer_ptr = rle_buffer;
+			rle_buffer_ptr = SCREEN_BUFFER + (gbuffer_y << 4);
 
 			// Update top or bottom half of attributes
 			// depending on bit 4 of cam_pos
@@ -244,7 +244,7 @@ void scroll_advance (unsigned char pixels) {
 				cam_pos_bit_3 = rda;
 				gpp = SCROLL_BUFFER;
 				gpr = ATTRIB_BUFFER;
-				rle_buffer_ptr = rle_buffer;
+				rle_buffer_ptr = SCREEN_BUFFER + (gbuffer_y << 4);
 
 				// Relocate writers
 				scroll_writers_realloc ();
@@ -294,32 +294,34 @@ void scroll_advance (unsigned char pixels) {
 			return;
 
 		case 7:
+			/*
 			// deal with the collision buffer
 #ifdef ROLLED_SCROLLER
 			// Rolled
 			gpit = 8; do {
 				rda = *rle_buffer_ptr ++;
-				*gpq ++ = rda;	
+				*gpq ++ = behs [rda];	
 			} while (-- gpit);
 #else		
 			// Unrolled
 			rda = *rle_buffer_ptr ++;
-			*gpq ++ = rda;
+			*gpq ++ = behs [rda];	
 			rda = *rle_buffer_ptr ++;
-			*gpq ++ = rda;
+			*gpq ++ = behs [rda];	
 			rda = *rle_buffer_ptr ++;
-			*gpq ++ = rda;
+			*gpq ++ = behs [rda];	
 			rda = *rle_buffer_ptr ++;
-			*gpq ++ = rda;
+			*gpq ++ = behs [rda];	
 			rda = *rle_buffer_ptr ++;
-			*gpq ++ = rda;
+			*gpq ++ = behs [rda];	
 			rda = *rle_buffer_ptr ++;
-			*gpq ++ = rda;
+			*gpq ++ = behs [rda];	
 			rda = *rle_buffer_ptr ++;
-			*gpq ++ = rda;
+			*gpq ++ = behs [rda];	
 			rda = *rle_buffer_ptr ++;
-			*gpq ++ = rda;
+			*gpq ++ = behs [rda];	
 #endif
+			*/
 			scroll_state = 0;
 			return;
 	}

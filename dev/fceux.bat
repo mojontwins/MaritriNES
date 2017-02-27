@@ -1,1 +1,0 @@
-@start ..\..\..\..\utils\fceux\fceux.exe maritrini.nes
