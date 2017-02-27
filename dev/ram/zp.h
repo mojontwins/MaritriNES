@@ -14,6 +14,7 @@ const unsigned char *c_ts_pals;
 // General stuff
 
 const unsigned char *map_ptr;
+unsigned char map_tilepos;
 const unsigned char *behs;
 unsigned char *ul;
 unsigned int gp_addr;
@@ -78,3 +79,17 @@ unsigned char caux;
 // Enems strip
 
 const unsigned char *strip_pointer;
+
+// Enems
+
+unsigned char enit, enjt;
+unsigned char enstart;
+
+unsigned char ena [ENEMS_MAX];
+unsigned char enx [ENEMS_MAX];
+unsigned int eny [ENEMS_MAX];
+
+// Enems slots (stack)
+
+unsigned char ensloti;
+unsigned char enslots [ENEMS_MAX];

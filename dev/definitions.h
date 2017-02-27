@@ -72,3 +72,7 @@
 	#define PLAYER_RX					4
 	#define PLAYER_VX_MAX				40
 	#define PLAYER_VX_MIN 				(PLAYER_AX << 2)
+
+// Enems
+	#define ENEMS_MAX 					6
+	

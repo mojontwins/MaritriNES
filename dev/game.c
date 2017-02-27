@@ -18,6 +18,7 @@
 #include "assets/spriteset.h"
 #include "assets/precalcs.h"
 #include "assets/behs.h"
+#include "assets/strips.h"
 #include "assets/levelset.h"
 
 // Some variables
@@ -38,6 +39,7 @@
 #include "engine/scroller_rle.h"
 #include "engine/gbuffer.h"
 #include "engine/player.h"
+#include "engine/enems.h"
 #include "engine/game.h"
 
 void main (void) {

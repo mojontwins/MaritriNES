@@ -76,3 +76,17 @@ Tras un buen ratito la he metido en cintura y funciona genial. Ahora puedo scrol
 
 Lo próximo será examinar las rutinas de enemigos del original e integrarlas. Ahora voy a subir a github y a parar.
 
+~~
+
+El tema de los enemigos funciona como en Pantanow / etc, o sea, con una tira de enemigos que se va consumiendo según avanza el mapa. En el maritrini original es exactamente igual: 3 bytes por enemigo, con el primero la coordenada Y del tile donde aparecen, y 2 bytes con diferentes codificaciones.
+
+Según esto, en el original las codificaciones para estos bytes eran:
+
+	YYYYYYYY XXXXEEEE TTTTSSSS
+
+La codificación de estas cosas es un poco confusa. En realidad todo es muy confuso, como siempre, pero creo que se puede apañar un poco para mejorar el tema.
+
+Necesito un puntero al strip. Además usaré un sistema de slots libres que es siempre mucho más rápido de consumir. 
+
+Se me acaba el tiempo, a ver si por lo menos puedo poner la infraestructura básica (los slots, consumir el strip, estcétera).
+

@@ -6,7 +6,7 @@ void game_init (void) {
 
 	map_ptr = level_map [level];
 	behs = level_behs [level];
-	//strip_pointer = level_strips [level];
+	strip_pointer = level_strips [level];
 	c_ts_tmaps_0 = level_ts_tmaps_0 [level];
 	c_ts_tmaps_1 = level_ts_tmaps_1 [level];
 	c_ts_tmaps_2 = level_ts_tmaps_2 [level]; 
@@ -17,6 +17,7 @@ void game_init (void) {
 	pal_spr (level_pal_fg [level]);
 
 	player_init ();
+	enems_init ();
 }
 
 void game_loop (void) {
@@ -53,7 +54,8 @@ void game_loop (void) {
 		
 		player_move ();
 		player_render ();
-		
+		enems_do ();
+				
 		oam_hide_rest (oam_index);
 		
 		*ul = NT_UPD_EOF;

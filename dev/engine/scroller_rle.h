@@ -11,6 +11,7 @@ void scroll_init (void) {
 	wtp = 0;
 	rle_ctr = 0;
 	gbuffer_y = 0;
+	map_tilepos = 0;
 }
 
 unsigned char scroll_get_byte (void) {
@@ -82,8 +83,9 @@ void scroll_advance (unsigned char pixels) {
 		cam_pos_bit_3 = cam_pos & 0x08;
 
 		// Fill buffer
-		gbuffer_y = (gbuffer_y - 1) & 0x0f;
-		rle_buffer_ptr = gpq = SCREEN_BUFFER + (gbuffer_y << 4);
+		map_tilepos --;
+		gbuffer_y = gbuffer_y - 16;
+		rle_buffer_ptr = gpq = SCREEN_BUFFER + gbuffer_y;
 		gpit = 16; while (gpit --) *gpq ++ = scroll_get_byte ();
 
 		// Init pointers
@@ -141,7 +143,7 @@ void scroll_advance (unsigned char pixels) {
 
 		case 3:
 			// Paint attributes
-			rle_buffer_ptr = SCREEN_BUFFER + (gbuffer_y << 4);
+			rle_buffer_ptr = SCREEN_BUFFER + gbuffer_y;
 
 			// Update top or bottom half of attributes
 			// depending on bit 4 of cam_pos
@@ -244,7 +246,7 @@ void scroll_advance (unsigned char pixels) {
 				cam_pos_bit_3 = rda;
 				gpp = SCROLL_BUFFER;
 				gpr = ATTRIB_BUFFER;
-				rle_buffer_ptr = SCREEN_BUFFER + (gbuffer_y << 4);
+				rle_buffer_ptr = SCREEN_BUFFER + gbuffer_y;
 
 				// Relocate writers
 				scroll_writers_realloc ();
