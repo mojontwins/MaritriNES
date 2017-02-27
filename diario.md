@@ -90,3 +90,25 @@ Necesito un puntero al strip. Además usaré un sistema de slots libres que es s
 
 Se me acaba el tiempo, a ver si por lo menos puedo poner la infraestructura básica (los slots, consumir el strip, estcétera).
 
+	// 1 - Fixed. Shoots.
+	// 2 - Back & forth, horizontally. They stop at walls and turn around.
+	// 3 - Fallers, like 2 but also affected by gravity
+	// 4 - Chasers, they just chase you until you outscreen them.
+	// 5 - Arrows. Shot, hit or exit, then respawn.
+	// 7 - Platforms. Not an enemy, but still.
+
+Eso es lo que había planeado, no sé qué había y qué no.
+
+~~
+
+Estoy muy cansado, pero he pensado que almacenar el sprite ID es una tontería cuando lo suyo es hacerlo fijo y que tenga que ver con el tipo, directamente. Por tanto:
+
+	YYYYYYYY XXXXTTTT BBBBAAAA
+
+Con AAAA y BBBB codificando diferentes cosas según el tipo:
+
+- Tipo 1, "fixed": AAAA = frequencia (se le hace < que esto a un rand).
+- Tipo 2 y tipo 3: AAAA = velocidad en pixels (0 = 1/2 pixel por frame).
+- Tipo 4: N/A
+- Tipo 5: AAAA = velocidad en pixels, BBBB = orientación; 0 = izq, 1 = der.
+- Tipo 7: AAAA = limite 1, BBBB = limite 2.

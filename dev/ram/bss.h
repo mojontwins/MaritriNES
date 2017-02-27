@@ -10,7 +10,7 @@ unsigned char ticks, halfticks;
 // Flow
 
 unsigned char level, game_time, ticker, display;
-unsigned char flash;
+unsigned char flash, free_frame;
 
 // Update list for VBlank updates
 

@@ -12,8 +12,11 @@ void enems_init (void) {
 }
 
 void enems_spawn (void) {
-	if (strip_pointer [0] == map_tilepos) {
-		rda = strip_pointer [1]; rdb = strip_pointer [2];
+	rdy = strip_pointer [0];
+	if (rdy == map_tilepos) {
+		rdx = strip_pointer [1]; rdc = strip_pointer [2];
+
+		// rdx == XXXXTTTT rdc == BBBBAAAA
 
 		// Create enemies upon type etc.
 		// Scroll lock goes here, when needed, etc.
@@ -26,12 +29,50 @@ void enems_spawn (void) {
 			enit = enslots [ensloti];
 
 			ena [enit] = 1;			// Enemy active
-						
+			
 			// Now fill everything else. Position, state, counters...
+
+			ent [enit] = rdx & 0x0f; 		// TTTT
+			enx [enit] = rdx & 0xf0;		// XXXX
+			eny [enit] = rdy << 4;			// YYYYYYYY
+
+			rda = rdc & 0x0f;
+			rdb = rdc & 0xf0;
+			
+			switch (ent [enit]) {
+				case 1:
+					// Fixed
+					enx1 [enit] = rda; // Means shoot freq.
+					break;
+				case 2:
+					// Back & Forth, stop @ obstacles / holes
+				case 3:
+					// Fallers, like 2 but fall.
+					enmx [enit] = enx [enit] < 128 ? rda : -rda;
+					break;
+				case 4: 
+					// Chasers
+					enmx [enit] = enmy [enit] = 0;
+					break;
+				case 5:
+					// Arrows
+					// B == 0 : left, 1 : right
+					enmx [enit] = rdb ? rda : -rda;
+					break;
+				case 6:
+					// Must think of sumthin
+					break;
+				case 7:
+					// Platforms
+					enx1 [enit] = rda << 4;
+					enx2 [enit] = rdb;
+					enmx [enit] = 1;
+					break;
+			}
 		}
 
 		// And advance pointer. If an enemy was skipped... bad luck.
-		if (strip_pointer [0]) strip_pointer += 3;
+		if (strip_pointer [0]) strip_pointer += ENEM_SIZE;
 	}
 }
 
@@ -51,6 +92,29 @@ void enems_do (void) {
 
 		if (ena [enit]) {
 			// Blah
+			if (ent [enit] == 8) {
+				// Handle "special type explosion"
+			} else {
+				// Previous stuff: based on type: shoot, fall, pursue.
+				switch (ent [enit]) {
+					case 1:
+						// Shoot
+					case 3:
+						// Gravity
+					case 4:
+						// Pursue
+				}
+
+				// Vertical movement & collision
+
+				// Horizontal movement & collision
+
+				// collide with player
+
+				// destroy
+
+				// paint
+			}
 		}
 	}
 	enstart ++; if (enstart == ENEMS_MAX) enstart = 0;
