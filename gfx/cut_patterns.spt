@@ -1,0 +1,27 @@
+# BANK 0 : BACKGROUND
+
+# FONT. Substitute later
+OPEN font.png
+PALS palts0.png
+CHARSET 0, 0, 32, 2
+
+# Metatilesets.
+MAPFILE ..\dev\assets\tiledata.h
+
+# Set 0
+OPEN ts0.png
+PALS palts0.png
+LABEL ts0
+MAPPED 0, 0, 2, 2, 16, 2, 20 DEINTERLACED
+
+
+# Fill up
+FILL 4096
+
+# BANK 1 : SPRITES
+
+# Bits
+# Player
+# Enems
+
+FILL 4096
