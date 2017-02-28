@@ -4,7 +4,7 @@
 // Zero page variables
 
 //const unsigned char * const *spr_player;
-//const unsigned char * const *spr_enems;
+const unsigned char * const *spr_enems;
 
 // Level (fast) pointers
 
@@ -88,9 +88,11 @@ unsigned char enstart;
 unsigned char ena [ENEMS_MAX];
 unsigned char ent [ENEMS_MAX];
 unsigned char enx [ENEMS_MAX];
+unsigned char encx;
 unsigned int eny [ENEMS_MAX];
 signed char enmx [ENEMS_MAX], enmy [ENEMS_MAX];
 unsigned char enx1 [ENEMS_MAX], enx2 [ENEMS_MAX];
+signed char envx, envy;
 
 // Enems slots (stack)
 

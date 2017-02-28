@@ -31,6 +31,7 @@ unsigned char scr_buff [256];
 // Camera control
 
 unsigned char is_scrolling;
+unsigned char autoscroll;
 unsigned int scroll_to;
 
 // RLE buffer

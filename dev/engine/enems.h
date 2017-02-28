@@ -12,8 +12,10 @@ void enems_init (void) {
 }
 
 void enems_spawn (void) {
+	//pal_col (0,0);
 	rdy = strip_pointer [0];
-	if (rdy == map_tilepos) {
+*((unsigned char *) 0xf0) = rdy;
+	if (rdy == map_tilepos && rdy) {
 		rdx = strip_pointer [1]; rdc = strip_pointer [2];
 
 		// rdx == XXXXTTTT rdc == BBBBAAAA
@@ -33,7 +35,7 @@ void enems_spawn (void) {
 			// Now fill everything else. Position, state, counters...
 
 			ent [enit] = rdx & 0x0f; 		// TTTT
-			enx [enit] = rdx & 0xf0;		// XXXX
+			enx [enit] = 4 + (rdx & 0xf0);	// XXXX
 			eny [enit] = rdy << 4;			// YYYYYYYY
 
 			rda = rdc & 0x0f;
@@ -48,7 +50,12 @@ void enems_spawn (void) {
 					// Back & Forth, stop @ obstacles / holes
 				case 3:
 					// Fallers, like 2 but fall.
+					if (rda == 0) {
+						// half pixel
+						enx1 [rda] = 0; rda = 1;
+					} else enx1 [rda] = 1;
 					enmx [enit] = enx [enit] < 128 ? rda : -rda;
+					enmy [enit] = 0;
 					break;
 				case 4: 
 					// Chasers
@@ -72,7 +79,7 @@ void enems_spawn (void) {
 		}
 
 		// And advance pointer. If an enemy was skipped... bad luck.
-		if (strip_pointer [0]) strip_pointer += ENEM_SIZE;
+		if (rdy) strip_pointer += ENEM_SIZE;
 	}
 }
 
@@ -92,29 +99,157 @@ void enems_do (void) {
 
 		if (ena [enit]) {
 			// Blah
-			if (ent [enit] == 8) {
-				// Handle "special type explosion"
-			} else {
-				// Previous stuff: based on type: shoot, fall, pursue.
-				switch (ent [enit]) {
-					case 1:
-						// Shoot
-					case 3:
-						// Gravity
-					case 4:
-						// Pursue
+			rdt = ent [enit];
+
+			envx = envy = 0;
+
+			// Previous stuff: based on type: shoot, fall, pursue.
+			switch (rdt) {
+				case 1:
+					// Shoot
+					break;
+				case 3:
+					// Gravity
+					envy = enems_lut_falling [enmy [enit]];
+					if (enmy [enit] < ENEMS_LUT_FALLING_MAXIDX) enmy [enit] ++;
+					// Correct! no break here.
+				case 2:
+				case 7:
+					if (enx1 [enit] || half_life ) envx = enmx [enit];
+					break;
+				case 4:
+					// Pursue
+					if ((enit + half_life) & 1) break;
+					if ((pfacing && prx > enx [enit]) ||
+						(!pfacing && prx < enx [enit])) {
+						rdb = 1; break;
+					}
+
+					rda = rand8 (); rdb = 0;
+
+					if (rda > 2) {
+						if (prx > enx [enit]) {
+							if (enmx [enit] < ENEMS_LUT_ACCELERATION_MAXIDX) enmx [enit] ++;
+						}
+						if (prx < enx [enit]) {
+							if (enmx [enit] > -ENEMS_LUT_ACCELERATION_MAXIDX) enmx [enit] --;
+						}
+					}
+
+					envx = ADD_SIGN (
+						enmx [enit],
+						enems_lut_acceleration [ABS (enmx [enit])]
+					);
+					enx [enit] += envx;
+
+					if (rda > 2) {
+						if (pry > eny [enit]) {
+							if (enmy [enit] < ENEMS_LUT_ACCELERATION_MAXIDX) enmy [enit] ++;
+						}
+						if (pry < eny [enit]) {
+							if (enmy [enit] > -ENEMS_LUT_ACCELERATION_MAXIDX) enmy [enit] --;
+						}
+					}
+
+					envy = ADD_SIGN (
+						enmy [enit],
+						enems_lut_acceleration [ABS (enmy [enit])]
+					);
+					eny [enit] += envy;
+
+					break;
+				case 5:
+					// arrows fsm
+					break;
+				case 6:
+					// ??
+					break;
+			}
+			
+			// Vertical movement & collision
+			eny [enit] += envy;
+			
+			cx1 = enx [enit] >> 4;
+			cx2 = (enx [enit] + 7) >> 4;
+			if (envy < 0) {
+				cy2 = cy1 = (eny [enit]) >> 4;
+				cm_two_points ();
+				if ((at1 & 12) || (at2 & 12)) {
+					// Outta change for pursuers!
+					enmy [enit] = 0;
+					eny [enit] = (cy1 + 1) << 4;
 				}
+			} else if (envy > 0) {
+				cy2 = cy1 = (eny [enit] + 15) >> 4;
+				cm_two_points ();
+				if ((at1 & 12) || (at2 & 12)) {
+					// Outta change for pursuers!
+					enmy [enit] = 0;
+					eny [enit] = (cy2 - 1) << 4;
+				}
+			}
 
-				// Vertical movement & collision
+			// Horizontal movement & collision
+			encx = enx [enit];
+			enx [enit] += envx;
 
-				// Horizontal movement & collision
+			if (envx) {
+				cy1 = eny [enit] >> 4;
+				cy2 = (eny [enit] + 15) >> 4;
+				if (envx < 0) {
+					cx2 = cx1 = enx [enit] >> 4;
+				} else {
+					cx2 = cx1 = (enx [enit] + 7) >> 4;
+				}
+				cm_two_points ();
+				if ((at1 & 12) || (at2 & 12)) {
+					enmx [enit] = -enmx [enit];
+					enx [enit] = encx;
+				}
+			}
 
+			// relative position
+			rdy = eny [enit] - cam_pos;
+
+			// destroy
+			if (rdy >= 220) enems_destroy ();
+
+			// paint
+
+			if (rdt == 8) {
+				// Explosion
+
+				// logic
+				if (enx2 [enit]) enx2 [enit] --; else ent [enit] = 0;
+
+				// base
+				rda = 0;
+			} else {
 				// collide with player
 
-				// destroy
+				// base
+				rda = rdt << 2;
 
-				// paint
+				// facing
+				if (rdt == 1) {
+					if (prx < enx [enit]) rda += 2;
+				} else {
+					if (enmx [enit] < 0) rda += 2;
+				}
+
+				// frame
+				if (rdt == 1 || (rdt == 4 && rdb)) {
+					rda += (frame_counter >> 4) & 1;
+				} else if (rdt < 5) {
+					rda += (enx [enit] >> 4) & 1;
+				}
 			}
+
+			oam_index = oam_meta_spr (
+				enx [enit], rdy - 1, 
+				oam_index,
+				spr_enems [rda]
+			);
 		}
 	}
 	enstart ++; if (enstart == ENEMS_MAX) enstart = 0;

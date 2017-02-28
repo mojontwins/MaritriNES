@@ -5,7 +5,7 @@ Vamos a construir un juego nuevo con el material gráfico original del proyecto 
 
 La última revisión de Pantanow Engine trae un scroller capaz de usar tilesets mapeados (nada de tiles automáticos) sin la restricción sobre paletas original (*) y scrollear hasta 2 pixels por frame. No es mucho, pero apenas ocupa tiempo y para el juego que tengo entre manos tampoco es necesario ir más rápido.
 
-(*) En su encarnación original, el Scroller de Pantanow era capaz de scrollear 8 pixels por frame pero metiendo picos de actividad bastante bestias. Es MUY sencillo cambiarlo para que pueda scrollear 4 pixels por frame (ocupando más frame los que scrollea); si lo necesito puedo hacerlo. Además, la versión original tenía metatiles automáticos (el metatile N está hecho por los 4 patrones 4*N y siguientes) y la restricción de que el metatile N de los 16 tenía por fuerza que usar la paleta N>>2. 
+(*) *En su encarnación original, el Scroller de Pantanow era capaz de scrollear 8 pixels por frame pero metiendo picos de actividad bastante bestias. Es MUY sencillo cambiarlo para que pueda scrollear 4 pixels por frame (ocupando más frame los que scrollea); si lo necesito puedo hacerlo. Además, la versión original tenía metatiles automáticos (el metatile N está hecho por los 4 patrones 4N y siguientes) y la restricción de que el metatile N de los 16 tenía por fuerza que usar la paleta N>>2.*
 
 Lo primero que tengo que hacer es organizar los tiestos que tengo, principalmente los sets gráficos. Tengo que releerme el hilo para hacer una especie de resumen de ideas, porque seguro que había algunas cojonudas.
 
@@ -112,3 +112,40 @@ Con AAAA y BBBB codificando diferentes cosas según el tipo:
 - Tipo 4: N/A
 - Tipo 5: AAAA = velocidad en pixels, BBBB = orientación; 0 = izq, 1 = der.
 - Tipo 7: AAAA = limite 1, BBBB = limite 2.
+
+20170228
+========
+
+=Gravedad con valores precalculados=
+
+- eny es el índice de la tabla de incrementos sobre y precalculados.
+- Voy a simular una caída en un pequeño programa freeBasic para obtener la tabla de valores de velocidad.
+
+~~
+
+Tipos 2 y 3 están funcionando. Voy a por el 4. Tengo que resolver una colisión de intereses: la colisión vertical reinicia el contador ficticio para que el incremento sea 0; el valor de reinicio será diferente para los tipos 3 y 4. Es un if, lo sé, pero estas cosas me "enfeecen" el conjunto. [*]
+
+~~
+
+=Movimiento perseguidor con valores precalculados=
+
+- Cubro x e y con el mismo lut.
+- Simulo en freeBasic, como antes.
+- Este modelo es el que usé en Goddess. Si me aturullo, sé donde mirar :*)
+
+~~
+
+Olvidad esto [*] que dije. La tabla sólo lleva valores positivos, la inversión es manual. El 0 sigue estando en el índice 0.
+
+~~
+
+Bueno, tipo 4 metido. He hecho que si los miras no te persigan. Pero el tiempo de frame está subiendo peligrosamente.
+
+Voy a hacer un pequeño benchmark y luego a github.
+
+Quedaría ¿optimizar?, colisiones, disparos.
+
+Los disparos se me comen una barbaridad, son de punto fijo. No sé qué hacer. ¿Funcionaba la implementación en asm que hice en tiempos?
+
+~~
+

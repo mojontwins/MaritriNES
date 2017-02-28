@@ -75,4 +75,10 @@
 
 // Enems
 	#define ENEMS_MAX 					6
-	
+	#define ENEM_SIZE 					3	// Size of each entry in ROM
+	#define ENEM_G						7
+	#define ENEM_A						2
+	#define ENEM_MAX_V					16
+	#define ENEM_MAX_VFALL				96
+
+	#define SHOOT_TEST					1	// the bigger the more they shoot
