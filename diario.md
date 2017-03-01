@@ -5,7 +5,7 @@ Vamos a construir un juego nuevo con el material gráfico original del proyecto 
 
 La última revisión de Pantanow Engine trae un scroller capaz de usar tilesets mapeados (nada de tiles automáticos) sin la restricción sobre paletas original (*) y scrollear hasta 2 pixels por frame. No es mucho, pero apenas ocupa tiempo y para el juego que tengo entre manos tampoco es necesario ir más rápido.
 
-(*) En su encarnación original, el Scroller de Pantanow era capaz de scrollear 8 pixels por frame pero metiendo picos de actividad bastante bestias. Es MUY sencillo cambiarlo para que pueda scrollear 4 pixels por frame (ocupando más frame los que scrollea); si lo necesito puedo hacerlo. Además, la versión original tenía metatiles automáticos (el metatile N está hecho por los 4 patrones 4*N y siguientes) y la restricción de que el metatile N de los 16 tenía por fuerza que usar la paleta N>>2. 
+(*) *En su encarnación original, el Scroller de Pantanow era capaz de scrollear 8 pixels por frame pero metiendo picos de actividad bastante bestias. Es MUY sencillo cambiarlo para que pueda scrollear 4 pixels por frame (ocupando más frame los que scrollea); si lo necesito puedo hacerlo. Además, la versión original tenía metatiles automáticos (el metatile N está hecho por los 4 patrones 4N y siguientes) y la restricción de que el metatile N de los 16 tenía por fuerza que usar la paleta N>>2.*
 
 Lo primero que tengo que hacer es organizar los tiestos que tengo, principalmente los sets gráficos. Tengo que releerme el hilo para hacer una especie de resumen de ideas, porque seguro que había algunas cojonudas.
 
@@ -90,3 +90,78 @@ Necesito un puntero al strip. Además usaré un sistema de slots libres que es s
 
 Se me acaba el tiempo, a ver si por lo menos puedo poner la infraestructura básica (los slots, consumir el strip, estcétera).
 
+	// 1 - Fixed. Shoots.
+	// 2 - Back & forth, horizontally. They stop at walls and turn around.
+	// 3 - Fallers, like 2 but also affected by gravity
+	// 4 - Chasers, they just chase you until you outscreen them.
+	// 5 - Arrows. Shot, hit or exit, then respawn.
+	// 7 - Platforms. Not an enemy, but still.
+
+Eso es lo que había planeado, no sé qué había y qué no.
+
+~~
+
+Estoy muy cansado, pero he pensado que almacenar el sprite ID es una tontería cuando lo suyo es hacerlo fijo y que tenga que ver con el tipo, directamente. Por tanto:
+
+	YYYYYYYY XXXXTTTT BBBBAAAA
+
+Con AAAA y BBBB codificando diferentes cosas según el tipo:
+
+- Tipo 1, "fixed": AAAA = frequencia (se le hace < que esto a un rand).
+- Tipo 2 y tipo 3: AAAA = velocidad en pixels (0 = 1/2 pixel por frame).
+- Tipo 4: N/A
+- Tipo 5: AAAA = velocidad en pixels, BBBB = orientación; 0 = izq, 1 = der.
+- Tipo 7: AAAA = limite 1, BBBB = limite 2.
+
+20170228
+========
+
+=Gravedad con valores precalculados=
+
+- eny es el índice de la tabla de incrementos sobre y precalculados.
+- Voy a simular una caída en un pequeño programa freeBasic para obtener la tabla de valores de velocidad.
+
+~~
+
+Tipos 2 y 3 están funcionando. Voy a por el 4. Tengo que resolver una colisión de intereses: la colisión vertical reinicia el contador ficticio para que el incremento sea 0; el valor de reinicio será diferente para los tipos 3 y 4. Es un if, lo sé, pero estas cosas me "enfeecen" el conjunto. [*]
+
+~~
+
+=Movimiento perseguidor con valores precalculados=
+
+- Cubro x e y con el mismo lut.
+- Simulo en freeBasic, como antes.
+- Este modelo es el que usé en Goddess. Si me aturullo, sé donde mirar :*)
+
+~~
+
+Olvidad esto [*] que dije. La tabla sólo lleva valores positivos, la inversión es manual. El 0 sigue estando en el índice 0.
+
+~~
+
+Bueno, tipo 4 metido. He hecho que si los miras no te persigan. Pero el tiempo de frame está subiendo peligrosamente.
+
+Voy a hacer un pequeño benchmark y luego a github.
+
+Quedaría ¿optimizar?, colisiones, disparos.
+
+Los disparos se me comen una barbaridad, son de punto fijo. No sé qué hacer. ¿Funcionaba la implementación en asm que hice en tiempos?
+
+20170301
+========
+
+Tengo que pensar en los enemigos que faltan. Por un lado débería comprobar si la implementación en ensamblador de los disparos es lo que se está usando en la demo de hace dos años, porque en ese caso seguro que viene muy bien...
+
+Luego el tema de las flechas. No son más que disparos horizontales, pero no sé si cargar más los disparos. Debería salir una flecha horizontalmente (y muy rápido) cada N frames después de llegar a su destino (de colisionar). Aquí necesitaría estados, y un sprite que ocluya.
+
+De este modo, tendría N frames apareciendo, volando, desapareciendo, idle. Son 4 estados. No sé bien cómo incluir esa infraestructura en lo que tengo, pero seguro que me viene. Lo que pasa es que creo que estoy llegando a mi límite de cansancio, llevo demasiado tiempo durmiendo muy poco, y mi cerebro está realmente lento.
+
+También faltan las plataformas móviles. Quizá debería hacer eso ya, que no es más que comprobar la colisión, y dejar las cosas más complejas para otro momento.
+
+~~
+
+Creo que paso de ensambladores mierder y procesaré las balas solo frames pares e impares dependiendo del número. Si las muevo a 4 pixels no creo que haya condiciones de carrera raras ¿no? El jugador nunca se mueve tan rápido.
+
+Ace.
+
+~~

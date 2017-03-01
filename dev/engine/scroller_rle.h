@@ -296,35 +296,13 @@ void scroll_advance (unsigned char pixels) {
 			return;
 
 		case 7:
-			/*
-			// deal with the collision buffer
-#ifdef ROLLED_SCROLLER
-			// Rolled
-			gpit = 8; do {
-				rda = *rle_buffer_ptr ++;
-				*gpq ++ = behs [rda];	
-			} while (-- gpit);
-#else		
-			// Unrolled
-			rda = *rle_buffer_ptr ++;
-			*gpq ++ = behs [rda];	
-			rda = *rle_buffer_ptr ++;
-			*gpq ++ = behs [rda];	
-			rda = *rle_buffer_ptr ++;
-			*gpq ++ = behs [rda];	
-			rda = *rle_buffer_ptr ++;
-			*gpq ++ = behs [rda];	
-			rda = *rle_buffer_ptr ++;
-			*gpq ++ = behs [rda];	
-			rda = *rle_buffer_ptr ++;
-			*gpq ++ = behs [rda];	
-			rda = *rle_buffer_ptr ++;
-			*gpq ++ = behs [rda];	
-			rda = *rle_buffer_ptr ++;
-			*gpq ++ = behs [rda];	
-#endif
-			*/
-			scroll_state = 0;
+			// free_frame equals 1 when no special things are
+			// done. Some things will be done only if free_frame == 1.
+			free_frame = 1;
+
+			// And back to the beginning of time
+			//scroll_state = 0;
+			// But wasn't really needed.
 			return;
 	}
 }

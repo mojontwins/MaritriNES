@@ -4,7 +4,7 @@
 // player.h - player functions
 
 void player_init (void) {
-	py = (252*16) << FIX_BITS;
+	py = (253*16) << FIX_BITS;
 	px = 124 << FIX_BITS;
 	pvx = pvy = 0;
 	pfacing = 0;

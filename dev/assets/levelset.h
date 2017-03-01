@@ -15,3 +15,5 @@ const unsigned char * const level_pal_fg [] = { mypal_game_fg0 };
 
 const unsigned char * const level_behs [] = { behs0 };
 const unsigned char * const level_strips [] = { enems_strip_0 };
+
+const unsigned char * const * const level_spr_enems [] = { spr_enems0 };

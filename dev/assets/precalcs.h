@@ -25,3 +25,13 @@ const unsigned char shr2 [] = {
 	4, 4, 4, 4, 5, 5, 5, 5,
 	6, 6, 6, 6, 7, 7, 7, 7
 };
+
+#define ENEMS_LUT_FALLING_MAXIDX 15
+const signed char enems_lut_falling [] = {
+	0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 6
+};
+
+#define ENEMS_LUT_ACCELERATION_MAXIDX 15
+const signed char enems_lut_acceleration [] = {
+	0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1
+};

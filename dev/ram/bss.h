@@ -10,7 +10,7 @@ unsigned char ticks, halfticks;
 // Flow
 
 unsigned char level, game_time, ticker, display;
-unsigned char flash;
+unsigned char flash, free_frame;
 
 // Update list for VBlank updates
 
@@ -31,6 +31,7 @@ unsigned char scr_buff [256];
 // Camera control
 
 unsigned char is_scrolling;
+unsigned char autoscroll;
 unsigned int scroll_to;
 
 // RLE buffer

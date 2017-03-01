@@ -16,6 +16,8 @@ void game_init (void) {
 	pal_bg  (level_pal_bg [level]);
 	pal_spr (level_pal_fg [level]);
 
+	spr_enems = level_spr_enems [level];
+
 	player_init ();
 	enems_init ();
 }
@@ -28,30 +30,41 @@ void game_loop (void) {
 	ul = update_list;
 	*ul = NT_UPD_EOF;
 
-	fade_in ();
+	autoscroll = 128;
 
-	gpjt = 128; while (gpjt --) {
-		scroll_advance (2); 
+	gpjt = 32; while (gpjt --) {
+		autoscroll --;
+		scroll_advance (2);
 		ppu_wait_nmi ();
 	}
 
+	fade_in ();
+
 	while (1) {
-		hl_proc = half_life = 1 - half_life;
+		half_life = 1 - half_life;
+		hl_proc = half_life;
 		frame_counter ++;
 		ul = update_list;
 		oam_index = 28;
 		pad0 = pad_poll (0);
+		free_frame = 0;
 
 		// Move camera?
-		if (ppossee && pry < cam_pos + 120) {
-			is_scrolling = 1;
-			scroll_to = pry - 120;
-		}
-		if (is_scrolling) {
+		if (autoscroll) {
+			autoscroll --;
 			scroll_advance (2);
-			if (cam_pos <= scroll_to) is_scrolling = 0;
+		} else {
+			if (ppossee && pry < cam_pos + 120) {
+				is_scrolling = 1;
+				scroll_to = pry - 120;
+			}
+			if (is_scrolling) {
+				scroll_advance (2);
+				if (cam_pos <= scroll_to) is_scrolling = 0;
+			}
 		}
-		
+
+		enems_spawn ();
 		player_move ();
 		player_render ();
 		enems_do ();
@@ -59,11 +72,11 @@ void game_loop (void) {
 		oam_hide_rest (oam_index);
 		
 		*ul = NT_UPD_EOF;
-		*((unsigned char*)0x2001) = 0x1e;
+		//*((unsigned char*)0x2001) = 0x1e;
 		
 		ppu_wait_nmi ();
 		
-		*((unsigned char*)0x2001) = 0x1f;
+		//*((unsigned char*)0x2001) = 0x1f;
 	}
 
 	music_stop ();
