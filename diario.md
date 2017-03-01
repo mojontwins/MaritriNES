@@ -147,6 +147,7 @@ Quedaría ¿optimizar?, colisiones, disparos.
 
 Los disparos se me comen una barbaridad, son de punto fijo. No sé qué hacer. ¿Funcionaba la implementación en asm que hice en tiempos?
 
+<<<<<<< HEAD
 20170301
 ========
 
@@ -165,3 +166,7 @@ Creo que paso de ensambladores mierder y procesaré las balas solo frames pares 
 Ace.
 
 ~~
+=======
+~~
+
+>>>>>>> ffde31f52dabf5d7fb6912a33a58a632c5cc44a5

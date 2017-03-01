@@ -81,4 +81,8 @@
 	#define ENEM_MAX_V					16
 	#define ENEM_MAX_VFALL				96
 
+<<<<<<< HEAD
 	#define ENEM_SHOOT_TEST				1	// the bigger the more they shoot
+=======
+	#define SHOOT_TEST					1	// the bigger the more they shoot
+>>>>>>> ffde31f52dabf5d7fb6912a33a58a632c5cc44a5

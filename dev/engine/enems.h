@@ -108,8 +108,11 @@ void enems_do (void) {
 			switch (rdt) {
 				case 1:
 					// Shoot
+<<<<<<< HEAD
 					if (rand8 () < ENEM_SHOOT_TEST) 
 						bullets_shoot_player (en_x [gpit] + (4<<FIXBITS), en_y [gpit] + (4<<FIXBITS));
+=======
+>>>>>>> ffde31f52dabf5d7fb6912a33a58a632c5cc44a5
 					break;
 				case 3:
 					// Gravity
@@ -229,6 +232,7 @@ void enems_do (void) {
 				rda = 0;
 			} else {
 				// collide with player
+<<<<<<< HEAD
 				if (rdt == 7) {
 					if (prx + 19 >= enx [enit] && prx <= enx [enit] + 19) {
 						if (pry + 16 >= eny [enit] && pry + 12 <= eny [enit]) {
@@ -240,12 +244,18 @@ void enems_do (void) {
 				} else {
 					// Die or butt
 				}
+=======
+>>>>>>> ffde31f52dabf5d7fb6912a33a58a632c5cc44a5
 
 				// base
 				rda = rdt << 2;
 
 				// facing
+<<<<<<< HEAD
 				if (rdt == 1 || rdt == 4) {
+=======
+				if (rdt == 1) {
+>>>>>>> ffde31f52dabf5d7fb6912a33a58a632c5cc44a5
 					if (prx < enx [enit]) rda += 2;
 				} else {
 					if (enmx [enit] < 0) rda += 2;
