@@ -35,4 +35,16 @@ unsigned char autoscroll;
 unsigned int scroll_to;
 
 // RLE buffer
+
 unsigned char rle_buffer [16];
+
+// Bullets (cont)
+
+signed int bx [BULLETS_MAX];
+unsigned int by [BULLETS_MAX];
+signed char bvx [BULLETS_MAX], bvy [BULLETS_MAX];
+unsigned char ba [BULLETS_MAX];
+
+// Player (cont)
+
+unsigned char pflickers;

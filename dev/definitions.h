@@ -64,6 +64,7 @@
 	#define PLAYER_VY_JUMP_RELEASE		24
 
 // State
+	#define EST_DEAD 					2
 	#define EST_FLICKER 				1
 	#define EST_NORMAL 					0
 
@@ -71,6 +72,7 @@
 	#define PLAYER_AX					6
 	#define PLAYER_RX					4
 	#define PLAYER_VX_MAX				40
+	#define PLAYER_VX_REBOUND			64
 	#define PLAYER_VX_MIN 				(PLAYER_AX << 2)
 
 // Enems
@@ -81,8 +83,10 @@
 	#define ENEM_MAX_V					16
 	#define ENEM_MAX_VFALL				96
 
-<<<<<<< HEAD
 	#define ENEM_SHOOT_TEST				1	// the bigger the more they shoot
-=======
-	#define SHOOT_TEST					1	// the bigger the more they shoot
->>>>>>> ffde31f52dabf5d7fb6912a33a58a632c5cc44a5
+
+// Bullets
+	#define BULLETS_MAX					8
+	#define BULLETS_V					32
+	#define BULLETS_PATTERN				2
+	#define BULLETS_PALETTE 			1

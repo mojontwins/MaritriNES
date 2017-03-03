@@ -4,8 +4,10 @@
 // player.h - player functions
 
 void player_init (void) {
-	py = (253*16) << FIX_BITS;
-	px = 124 << FIX_BITS;
+	prx = 124;
+	pry = 253*16;
+	px = prx << FIX_BITS;
+	py = pry << FIX_BITS;
 	pvx = pvy = 0;
 	pfacing = 0;
 	pbutt = pj = pjb = 0;
@@ -13,9 +15,33 @@ void player_init (void) {
 	pkill = 0;
 	plife = 3;
 	pst = EST_NORMAL; 
+	pposseeo = 0xff;
+}
+
+void player_hit (void) {
+	if (rds) {
+		pvx = ADD_SIGN (rds, PLAYER_VX_REBOUND);
+	} else {
+		pvx = ADD_SIGN (-pvx, PLAYER_VX_REBOUND);
+	}
+	
+	if (plife) {
+		pst = EST_FLICKER;
+		pct = 100;
+		plife --;
+	} else {
+		pkill = 1;
+	}
 }
 
 void player_move (void) {
+	if (pkill) {
+		psprid = 6;
+		pst = EST_DEAD;
+		pry --;
+		return;
+	}
+
 	// Read pad
 	pad = pad0;
 	
@@ -47,7 +73,9 @@ void player_move (void) {
 	} else if (pvy > 0) {
 		cy1 = cy2 = (pry + 15) >> 4;
 		cm_two_points ();
-		if (/*((pry - 1) & 15) < 4 && */((at1 & 12) || (at2 & 12))) {
+		rdy = ((pry - 1) & 0xf);
+		*((unsigned char *) 0xf1) = rdy;
+		if (rdy < 8 && ((at1 & 12) || (at2 & 12))) {
 			pgotten = pvy = 0;
 			pry = (cy2 - 1) << 4;
 			py = pry << FIX_BITS;
@@ -172,6 +200,6 @@ void player_render (void) {
 	oam_meta_spr (
 		prx, pry - cam_pos - 1, 
 		4, 
-		spr_player [psprid]
+		(pst != EST_FLICKER || half_life) ? spr_player [psprid] : sprplempty
 	);
 }

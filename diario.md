@@ -147,7 +147,6 @@ Quedaría ¿optimizar?, colisiones, disparos.
 
 Los disparos se me comen una barbaridad, son de punto fijo. No sé qué hacer. ¿Funcionaba la implementación en asm que hice en tiempos?
 
-<<<<<<< HEAD
 20170301
 ========
 
@@ -165,8 +164,15 @@ Creo que paso de ensambladores mierder y procesaré las balas solo frames pares 
 
 Ace.
 
-~~
-=======
+20170303
+========
+
+A ver si pongo colisiones.
+
+- Enemigos [ ]
+- Balas [ ]
+- Pinches [ ]
+
 ~~
 
->>>>>>> ffde31f52dabf5d7fb6912a33a58a632c5cc44a5
+Ok, colisiones gestionadas. Ahora tengo que poner el hud. El hud era bastante chulo pero no sé si estaré pillando demasiados sprites con esto...

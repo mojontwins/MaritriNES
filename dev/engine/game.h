@@ -1,4 +1,8 @@
 void game_init (void) {
+	vram_adr (NAMETABLE_A);
+	vram_fill (64, 960); vram_fill (0, 64);
+	vram_fill (64, 960); vram_fill (0, 64);
+
 	scroll_init ();
 	//player_init ();
 	//bullets_init ();
@@ -20,6 +24,7 @@ void game_init (void) {
 
 	player_init ();
 	enems_init ();
+	bullets_init ();
 }
 
 void game_loop (void) {
@@ -45,7 +50,7 @@ void game_loop (void) {
 		hl_proc = half_life;
 		frame_counter ++;
 		ul = update_list;
-		oam_index = 28;
+		oam_index = 64;
 		pad0 = pad_poll (0);
 		free_frame = 0;
 
@@ -53,7 +58,7 @@ void game_loop (void) {
 		if (autoscroll) {
 			autoscroll --;
 			scroll_advance (2);
-		} else {
+		} else if (pkill == 0) {
 			if (ppossee && pry < cam_pos + 120) {
 				is_scrolling = 1;
 				scroll_to = pry - 120;
@@ -68,6 +73,7 @@ void game_loop (void) {
 		player_move ();
 		player_render ();
 		enems_do ();
+		bullets_do ();
 				
 		oam_hide_rest (oam_index);
 		
@@ -77,6 +83,8 @@ void game_loop (void) {
 		ppu_wait_nmi ();
 		
 		//*((unsigned char*)0x2001) = 0x1f;
+
+		if (pkill && pry < cam_pos) break;
 	}
 
 	music_stop ();
@@ -87,5 +95,13 @@ void game_loop (void) {
 	ppu_off ();
 
 	set_scroll_write (0);
+}
+
+void game_title (void) {
+
+}
+
+void game_over (void) {
+
 }
 

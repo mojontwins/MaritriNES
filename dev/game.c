@@ -39,6 +39,7 @@
 #include "engine/scroller_rle.h"
 #include "engine/gbuffer.h"
 #include "engine/player.h"
+#include "engine/bullets.h"
 #include "engine/enems.h"
 #include "engine/game.h"
 
@@ -56,8 +57,26 @@ void main (void) {
 	bank_bg (0);
 	bank_spr (1);
 
-	set_scroll_write (0);
+	while (1) {
+		set_scroll_write (0);
+		game_title ();
+		plives = 5;
 
-	game_init ();
-	game_loop ();
+		while (1) {
+			game_init ();
+			game_loop ();
+
+			if (pkill) {
+				if (plives) {
+					plives --;
+				} else {
+					game_over ();
+					break;
+				}
+			} else {
+				// Next level
+				break;
+			}
+		}
+	}
 }

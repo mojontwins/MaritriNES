@@ -22,12 +22,12 @@ unsigned int gp_addr;
 unsigned char pad0, prevpad, pad_once, half_life, frame_counter, hl_proc;
 unsigned char oam_index;
 
-unsigned char gpit, gpjt, bit;
-unsigned char rda, rdb, rdc, rdt;
+unsigned char gpit, gpjt;
+unsigned char rda, rdb, rdc, rdd, rdt;
 signed char rds;
-unsigned char rdx;
+unsigned char rdx; //, rdy;
 signed int rdy;
-signed char rdmx, rdmy;
+//signed char rdmx, rdmy;
 signed int gpiit, gpijt;
 unsigned int uin;
 
@@ -64,7 +64,7 @@ signed char pvx, pvy;
 unsigned char prx, poxx;
 signed int pry;
 unsigned char psprid, pfacing, pkill, pbutt;
-unsigned char pjb, pj, pctj, ppossee, pgotten;
+unsigned char pjb, pj, pctj, ppossee, pposseeo, pgotten;
 signed char ptgmx;
 unsigned char ptx1, ptx2, pty1, pty2;	// For pixel collisions
 unsigned char plives, plife;
@@ -98,3 +98,13 @@ signed char envx, envy;
 
 unsigned char ensloti;
 unsigned char enslots [ENEMS_MAX];
+
+// Bullets
+
+unsigned char bit;
+unsigned int bpy;
+
+// Bullets slots (stack)
+
+unsigned char bsloti;
+unsigned char bslots [BULLETS_MAX];

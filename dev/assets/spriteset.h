@@ -25,3 +25,20 @@ const unsigned char * const spr_enems0 [] = {
 	0, 0, 0, 0,												// Whatever
 	ssen0d, ssen0d, ssen0d, ssen0d							// Platform
 };
+
+const unsigned char sprplempty [] = {
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0x80
+};
+
+const unsigned char sprhud [] = {
+	0, 0, 3, 0, 						// 4
+	8, 0, 4, 2, 						// 8
+	0, 0, 0, 0,							// 12 = lives
+
+	0, 8, 15, 1, 0, 16, 16, 1,			// 16 = one
+	8, 8, 15, 1, 8, 16, 16, 1,			// 24 = two
+	16, 8, 15, 1, 16, 16, 16, 1,		// 32 = three
+};
