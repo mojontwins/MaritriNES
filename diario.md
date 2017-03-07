@@ -110,7 +110,6 @@ Con AAAA y BBBB codificando diferentes cosas según el tipo:
 - Tipo 1, "fixed": AAAA = frequencia (se le hace < que esto a un rand).
 - Tipo 2 y tipo 3: AAAA = velocidad en pixels (0 = 1/2 pixel por frame).
 - Tipo 4: N/A
-- Tipo 5: AAAA = velocidad en pixels, BBBB = orientación; 0 = izq, 1 = der.
 - Tipo 7: AAAA = limite 1, BBBB = limite 2.
 
 20170228
@@ -147,5 +146,179 @@ Quedaría ¿optimizar?, colisiones, disparos.
 
 Los disparos se me comen una barbaridad, son de punto fijo. No sé qué hacer. ¿Funcionaba la implementación en asm que hice en tiempos?
 
+20170301
+========
+
+Tengo que pensar en los enemigos que faltan. Por un lado débería comprobar si la implementación en ensamblador de los disparos es lo que se está usando en la demo de hace dos años, porque en ese caso seguro que viene muy bien...
+
+Luego el tema de las flechas. No son más que disparos horizontales, pero no sé si cargar más los disparos. Debería salir una flecha horizontalmente (y muy rápido) cada N frames después de llegar a su destino (de colisionar). Aquí necesitaría estados, y un sprite que ocluya.
+
+De este modo, tendría N frames apareciendo, volando, desapareciendo, idle. Son 4 estados. No sé bien cómo incluir esa infraestructura en lo que tengo, pero seguro que me viene. Lo que pasa es que creo que estoy llegando a mi límite de cansancio, llevo demasiado tiempo durmiendo muy poco, y mi cerebro está realmente lento.
+
+También faltan las plataformas móviles. Quizá debería hacer eso ya, que no es más que comprobar la colisión, y dejar las cosas más complejas para otro momento.
+
 ~~
+
+Creo que paso de ensambladores mierder y procesaré las balas solo frames pares e impares dependiendo del número. Si las muevo a 4 pixels no creo que haya condiciones de carrera raras ¿no? El jugador nunca se mueve tan rápido.
+
+Ace.
+
+20170303
+========
+
+A ver si pongo colisiones.
+
+- Enemigos [ ]
+- Balas [ ]
+- Pinches [ ]
+
+~~
+
+Ok, colisiones gestionadas. Ahora tengo que poner el hud. El hud era bastante chulo pero no sé si estaré pillando demasiados sprites con esto...
+
+20170306
+========
+
+He pasado el finde dándole fran a otros frentes (un nuevo portátil retro), pero he pensado kosa.
+
+Estaría bien seguir el guión original que habíamos pensado de la película y poner que la primera fase fuese muy sencilla. En ella, Maritrini llega hasta la escena en la que ve a Maite Torras comiéndose un cadáver. Esto debe ser sencillo de hacer, con cosas diseñadas para aprender las mecáncias básicas. Luego, dialoguito, y boss fight. Porque ya va siendo hora de que meta bosses en el juego.
+
+Máquinas de estados, vaya.
+
+El tema sería:
+
+- Hacer avanzar el scroll, una vez que alcancemos una "marca", hasta un punto en el que se alinée al 100% con la pantalla. Esto va a ser lo medio chungo de calcular.
+
+- ¿Por qué es esto? Porque quiero sacar texto, y porque tengo que encontrar la forma de almacenar lo que había en la pantalla antes de mostrar el cuadro de texto para poder restaurarlo. Podría emplear el buffer circular para restaurar la pantalla, pero ahora mismo me da un poco de jiña ponerme a hacer este tipo de cálculos (aunque a lo mejor es mucho más sencillo que lo que tengo pensado).
+
+- La idea es usar el nametable oculto para mostrar el cuadro de texto haciendo DOS splits. Y es aquí donde me entra la jiña. Como es texto fijo puedo hacer los splits usando delays, pero tendría que hacerlo a bajo nivel y tal porque neslib no permite este tipo de manejes (intenté hacer varios scrolls durante el tiempo de frame para ver si podía hacer un parallax perdiendo tiempo en la pantalla de título de maritrini pero un carajo para mí).
+
+- El tema es aprender a hacer scroll vertical por mi cuenta tocando registros y ver si esto es compatible con neslib - o hacerlo compatible con neslib.
+
+- Por supuesto esta es la forma dura pero creo que puedo sacar mucho bien de esto. Habría que perder todo el tiempo necesario hasta la franja de abajo de la zona de texto, y en el cachito que queda, simplemente comprobar que se pulse el botón y esperar a NMI.
+
+¿Y cómo se hace un scroll tocando registros? ¡Ese es el quid!
+
+La rutina de NMI de neslib hace todos los manejes porque el tema tiene su chicha y hay que dejar las cosas bien para que no empiece el wonky wonkeo (yo me entiendo).
+
+	lda #0
+	sta PPU_ADDR
+	lda #0
+	sta PPU_SCROLL
+	lda #0
+	sta PPU_SCROLL
+	lda #0
+	sta PPU_ADDR
+
+Voy a probar a hacer esto en un bucle sobre el mismo loop del juego con la pantalla activa a ver k ase.
+
+~~
+
+Oye, con valores fijos medio funciona! Lo único que necesito hacer es asegurarme de que scroll = 0 y que a partir de la fila 4 de la nametable de abajo el texto está bien puesto.
+
+Tengo que buscar buen los valores de conteo porque por ejemplo con 64 baila.
+
+Con un poco de ajuste de tiempo con nops y cosas así lo coloco medio qué.
+
+~~
+
+Ahora el tema está en tener la versión PAL y la NTSC de los valores. El problema principal es el valor inicial, los 64 scanlines que dejo pasar al principio. Usar un valor u otro dependiendo de PAL o NTSC no debería ser un problema, si al final me decanto por esta opción.
+
+Ha sido guay hacer el scroll a mano aunque aún no entiendo bien los valores (en realidad, más o menos, sí, pero mi caso es muy sencillo), pero creo que esta solución queda algo fea. Quizá lo suyo sería de verdad redibujar la pantalla con respecto al buffer.
+
+El tema es:
+
+- Sí o sí, alinear de forma que scroll = 0, o sea, las nametables están "en su sitio".
+- A partir de aquí, ver qué fila del buffer coincide con el borde superior de la pantalla, para saber qué redibujar.
+
+Aparte de esto tengo que pensar en cómo voy a implementar el tema de la detección de llegar al sitio y parar en el motor, pero seguro que se me ocurre fási si no me obsesiono.
+
+Ahora habría que definir el boss.
+
+El boss es Mayte Torras transformada en Zombie. Lo suyo es que tenga dos modos:
+
+- Modo disparar, se va al cadaver y te lanza tripas.
+- Modo perseguir, te persigue como un fantasma.
+
+Como en un principio Maritrini está indefensa, lo suyo es que active un rayo dándole a un botón. El tema será llevar a la bicha al sitio donde le de el rayo, salir a todo carajo a por el botón, y darle.
+
+El rayo se activa durante 1 segundo, y luego hay que esperar cinco segundos a que el botón se libere y se pueda usar otra vez.
+
+Creo que con esto tengo un primer boss sencillo y efectista.
+
+~~
+
+El tema será ahora dibujar esta primera fase. Debe ser un gimnasio, o la recepción de uno... Lo que sea, pero dividido en pisos.
+
+Con un sencillo divider en el mappy podré controlar que esté realmente alineado a pantalla para construir los pisos.
+
+~~
+
+Qué de cosas hay que resolver. No sé si lo suyo sería pasar esto ya a UNROM o a MMC1 antes de seguir. 
+
+Con MMC1 desde luego podría tener todos los buffers en WRAM que quisiera.
+
+Pero lo bonito es hacer que lo básico funcione en NROM ¿no?
+
+20170307
+========
+
+Al final no avancé NADA en ese frente, pero ahí queda apuntado. Por otro lado estuve pensando en poder tener animaciones idle para algunos enemigos y en dotar a Maritrini de algún tipo de hitter para defenderse.
+
+Las animaciones para los enemigos extra tendrían uso por ejemplo en una fase de la ducha que tengo pensada, en la que los enemigos saldrían duchándose y cuando pasas de su "Y" se activarían y ya se pondrían a perseguirte. Podría especificar ese valor extra en el nibble que me queda sin usar y luego usar 32+(N<<2) como ínicio de un bucle de máximo 4 frames (hablo de índice dentro del array de metasprites).
+
+Otras cosas:
+
+- Ver si puedo definir algo más para los enemigos que simplemente andan y caen, como por ejemplo que te persigan horizontalmente (si estás en su nivel (en un rango): se dirigen hacia tí)
+- Enemigos "chorro de vapor".
+- Conveyors.
+- Suelos resbalosos.
+- Gotas.
+- Implementar las flechas (¿se puede juntar con gotas?).
+
+Muchas cosas que hacer y poco tiempo para hacerlas. Además estuve intentando dibujar la primera fase con el fondo del gimnasio y me estaba quedando de pena. Todo sale muy naranja. Realmente es difícil pelearse con las limitaciones y con los pocos colores, pero sé que lo lograré. Mi problema es que tengo demasiado metido en la cabeza el aspecto de gimnasio clásico victoriano/eduardiano y es mejor que me lo vaya quitando de la cabeza. Espalderas para subir, plataformas gordas, alguna planta, pesas de fondo, ventanales, y poco más.
+
+~~
+
+¿Podría empotriñar gota y flecha en el mismo slot? Los dos van por estados, que son:
+
+- Idle
+- Apareciendo.
+- "En vuelo"
+- Golpeando
+
+Ambos necesitarían una variable que definiese con qué frecuencia salen, en número de segundos desde la última vez.
+
+Recordemos que tenemos 
+	
+	YYYYYYYY XXXXTTTT BBBBAAAA
+
+El paso de "En vuelo" a "Golpeando" bien puedo hacerlo reaprovechando las colisiones que ya estoy comprobando.
+
+Por tanto necesito:
+
+- Orientación. La gota siempre es para abajo, pero la flecha puede ser izquierda o derecha.
+- Tiempo en segundos desde la última vez.
+- Euh... ¿ya?
+
+Hum. Si lo hago así voy a forzar que en un nivel sólo pueda haber o gotas o flechas. En realidad tampoco es algo que me despeine si me deja libre un slot de enemigo que luego pueda emplear en algo chulo.
+
+Juer. Estas decisiones me asesinan.
+
+A tomar por culo.
+
+	BBBB = FOxx; AAAA = tiempo.
+
+	Donde F = 1, si flecha.
+	O = 1, si izquierda.
+
+Sabiendo esto voy a poner una gota. Tengo que meter los estados. Puedo usar x1 y x2 para ello, que están libres. Debería renombrar estas variables como "aux1" y "aux2" ¿no creen?
+
+~~
+
+Funciona pero creo que voy a tener que ponerme a refactorizar algunas cosas... El tema de los enemigos es un jodido pifostio. Pensaré :)
+
+~~
+
+
 

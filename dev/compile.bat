@@ -1,15 +1,18 @@
 @echo off
 if [%1]==[justcompile] goto :justcompile
 
-..\..\utils\mkts.exe mode=pals pals=..\gfx\palts0.png out=work\palbg0.h label=mypal_game_bg0 silent
-..\..\utils\mkts.exe mode=pals pals=..\gfx\palss0.png out=work\palfg0.h label=mypal_game_fg0 silent
-copy /b work\palbg0.h + work\palfg0.h assets\palettes.h
+..\..\utils\mkts.exe mode=pals pals=..\gfx\paltslib.png out=work\palbglib.h label=pal_bg_lib silent
+..\..\utils\mkts.exe mode=pals pals=..\gfx\palsslib.png out=work\palfglib.h label=pal_fg_lib silent
+..\..\utils\mkts.exe mode=pals pals=..\gfx\paltsgym.png out=work\palbggym.h label=pal_bg_gym silent
+..\..\utils\mkts.exe mode=pals pals=..\gfx\palssgym.png out=work\palfggym.h label=pal_fg_gym silent
+copy /b work\palbglib.h + work\palfglib.h + work\palbggym.h + work\palfggym.h assets\palettes.h
 
 cd ..\gfx
 ..\..\utils\mkts.exe mode=scripted in=cut_patterns.spt out=..\dev\tileset.chr
 
 cd ..\map
-..\..\utils\pemapcnv3.exe level0.map ..\dev\assets\map0.h 0
+..\..\utils\pemapcnv3.exe level_lib.map ..\dev\assets\map_lib.h lib
+..\..\utils\pemapcnv3.exe level_gym.map ..\dev\assets\map_gym.h gym
 
 :justcompile
 cd ..\dev

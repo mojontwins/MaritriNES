@@ -44,7 +44,7 @@ void enems_spawn (void) {
 			switch (ent [enit]) {
 				case 1:
 					// Fixed
-					enx1 [enit] = rda; // Means shoot freq.
+					ENFREQ [enit] = rda; // Means shoot freq.
 					break;
 				case 2:
 					// Back & Forth, stop @ obstacles / holes
@@ -63,8 +63,13 @@ void enems_spawn (void) {
 					break;
 				case 5:
 					// Arrows
-					// B == 0 : left, 1 : right
-					enmx [enit] = rdb ? rda : -rda;
+					// B == FOxx, A = time
+					ENMAXCT [enit] = 15 + (rda << 4);
+					ENSTATE [enit] = 3;
+					enmx [enit] = 0;
+					enct [enit] = 0;
+					eny1 [enit] = eny [enit];
+					enmy [enit] = 0;
 					break;
 				case 6:
 					// Must think of sumthin
@@ -93,6 +98,7 @@ void enems_destroy (void) {
 }
 
 void enems_do (void) {
+	ptgmx = pgotten = 0;
 	enit = enstart;
 	enjt = ENEMS_MAX; while (enjt --) {
 		enit += (ENEMS_MAX-1); if (enit >= ENEMS_MAX) enit -= ENEMS_MAX;
@@ -107,12 +113,27 @@ void enems_do (void) {
 			switch (rdt) {
 				case 1:
 					// Shoot
+					if (rand8 () < ENFREQ [enit]) {
+						rdx = enx [enit]; rdy = eny [enit] + 4;
+						bullets_shoot_player ();
+					}
 					break;
+				case 5:
+					// arrows fsm
+					if (ENSTATE [enit] != 2) {
+						if (enct [enit]) enct [enit] --; else {
+							ENSTATE [enit] = (ENSTATE [enit] + 1) & 3;
+							enct [enit] = ENSTATE [enit] ? drop_fixed_times [ENSTATE [enit]] : ENMAXCT [enit];
+							if (0 == ENSTATE [enit]) eny [enit] = eny1 [enit];
+						}
+						break;
+					}
+					// Correct! no break here. If state = 2, fall
 				case 3:
 					// Gravity
 					envy = enems_lut_falling [enmy [enit]];
 					if (enmy [enit] < ENEMS_LUT_FALLING_MAXIDX) enmy [enit] ++;
-					// Correct! no break here.
+					// Correct! no break here. Move left/right
 				case 2:
 				case 7:
 					if (enx1 [enit] || half_life ) envx = enmx [enit];
@@ -158,9 +179,6 @@ void enems_do (void) {
 					eny [enit] += envy;
 
 					break;
-				case 5:
-					// arrows fsm
-					break;
 				case 6:
 					// ??
 					break;
@@ -174,8 +192,7 @@ void enems_do (void) {
 			if (envy < 0) {
 				cy2 = cy1 = (eny [enit]) >> 4;
 				cm_two_points ();
-				if ((at1 & 12) || (at2 & 12)) {
-					// Outta change for pursuers!
+				if ((at1 & 8) || (at2 & 8)) {
 					enmy [enit] = 0;
 					eny [enit] = (cy1 + 1) << 4;
 				}
@@ -183,9 +200,14 @@ void enems_do (void) {
 				cy2 = cy1 = (eny [enit] + 15) >> 4;
 				cm_two_points ();
 				if ((at1 & 12) || (at2 & 12)) {
-					// Outta change for pursuers!
 					enmy [enit] = 0;
 					eny [enit] = (cy2 - 1) << 4;
+
+					// and
+					if (rdt == 5 && ENSTATE [enit] == 2) {
+						ENSTATE [enit] = 3;
+						enct [enit] = drop_fixed_times [3];
+					} 
 				}
 			}
 
@@ -197,12 +219,14 @@ void enems_do (void) {
 				cy1 = eny [enit] >> 4;
 				cy2 = (eny [enit] + 15) >> 4;
 				if (envx < 0) {
-					cx2 = cx1 = enx [enit] >> 4;
+					rdx = 8;
+					cx2 = cx1 = rdt == 7 ? (enx [enit] - 12) >> 4 : enx [enit] >> 4;
 				} else {
-					cx2 = cx1 = (enx [enit] + 7) >> 4;
+					rdx = 240;
+					cx2 = cx1 = rdt == 7 ? (enx [enit] + 19) >> 4 : (enx [enit] + 7) >> 4;
 				}
 				cm_two_points ();
-				if ((at1 & 12) || (at2 & 12)) {
+				if ((at1 & 8) || (at2 & 8) || enx [enit] == rdx) {
 					enmx [enit] = -enmx [enit];
 					enx [enit] = encx;
 				}
@@ -212,7 +236,11 @@ void enems_do (void) {
 			rdy = eny [enit] - cam_pos;
 
 			// destroy
-			if (rdy >= 220) enems_destroy ();
+			if (rdt < 5) {
+				if (rdy >= 220) enems_destroy ();
+			} else {
+				if (eny1 [enit] > cam_pos + 220) enems_destroy ();
+			}
 
 			// paint
 
@@ -220,28 +248,61 @@ void enems_do (void) {
 				// Explosion
 
 				// logic
-				if (enx2 [enit]) enx2 [enit] --; else ent [enit] = 0;
+				if (enct [enit]) enct [enit] --; else {
+					enems_destroy ();
+					continue;
+				}
 
 				// base
 				rda = 0;
 			} else {
-				// collide with player
-
 				// base
 				rda = rdt << 2;
 
-				// facing
-				if (rdt == 1) {
-					if (prx < enx [enit]) rda += 2;
+				if (rdt == 5) {
+					if (rdy >= 220) {
+						ENSTATE [enit] = 0;
+						enct [enit] = ENMAXCT [enit];
+						eny [enit] = eny1 [enit];
+					}
+					if (ENSTATE [enit] == 3) {
+						rda += (enct [enit] >> 2) + 1;
+					}
 				} else {
-					if (enmx [enit] < 0) rda += 2;
+					// facing
+					if (rdt == 1 || rdt == 4) {
+						if (prx < enx [enit]) rda += 2;
+					} else {
+						if (enmx [enit] < 0) rda += 2;
+					}
+
+					// frame
+					if (rdt == 1 || (rdt == 4 && rdb)) {
+						rda += (frame_counter >> 4) & 1;
+					} else if (rdt < 5) {
+						rda += (enx [enit] >> 4) & 1;
+					}
 				}
 
-				// frame
-				if (rdt == 1 || (rdt == 4 && rdb)) {
-					rda += (frame_counter >> 4) & 1;
-				} else if (rdt < 5) {
-					rda += (enx [enit] >> 4) & 1;
+				// collide with player
+				if (rdt == 7) {
+					if (prx + 19 >= enx [enit] && prx <= enx [enit] + 19) {
+						if (pry + 16 >= eny [enit] && pry + 12 <= eny [enit]) {
+							pgotten = 1;
+							ptgmx = (envx << FIX_BITS);
+							pry = eny [enit] - 16; py = pry << FIX_BITS;
+						}
+					}
+				} else if (pst == EST_NORMAL) {
+					if (CLE (prx, pry, enx [enit], eny [enit])) {
+						rds = envx;
+						player_hit ();
+						if (rdt < 5) {
+							ent [enit] = 8;
+							enct [enit] = 16;
+							rda = 0;
+						}
+					}
 				}
 			}
 
@@ -254,4 +315,3 @@ void enems_do (void) {
 	}
 	enstart ++; if (enstart == ENEMS_MAX) enstart = 0;
 }
-

@@ -3,7 +3,12 @@
 
 // Tile behaviours.
 
-const unsigned char behs0 [] = {
+const unsigned char behs_gym [] = {
+	0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 8, 8, 8, 8, 8,
+	4, 4, 4, 4, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0
+};
+
+const unsigned char behs_lib [] = {
 	0, 8, 0, 0, 0, 0, 0, 0, 8, 8, 8, 8, 4, 1, 8, 4, 
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };

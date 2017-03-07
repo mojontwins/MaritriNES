@@ -1,4 +1,13 @@
+// Pantanow Engine rev3 201703
+// Copyleft 2017 by The Mojon Twins
+
+// Game loops & fixed screens
+
 void game_init (void) {
+	vram_adr (NAMETABLE_A);
+	vram_fill (64, 960); vram_fill (0, 64);
+	vram_fill (64, 960); vram_fill (0, 64);
+
 	scroll_init ();
 	//player_init ();
 	//bullets_init ();
@@ -20,6 +29,7 @@ void game_init (void) {
 
 	player_init ();
 	enems_init ();
+	bullets_init ();
 }
 
 void game_loop (void) {
@@ -38,45 +48,60 @@ void game_loop (void) {
 		ppu_wait_nmi ();
 	}
 
+	hud_paint ();
+
 	fade_in ();
 
+	fskipct = 0;
 	while (1) {
 		half_life = 1 - half_life;
 		hl_proc = half_life;
 		frame_counter ++;
 		ul = update_list;
-		oam_index = 28;
-		pad0 = pad_poll (0);
-		free_frame = 0;
 
-		// Move camera?
-		if (autoscroll) {
-			autoscroll --;
-			scroll_advance (2);
+		if (ntsc && fskipct ++ == 6) {
+			fskipct = 0;
 		} else {
-			if (ppossee && pry < cam_pos + 120) {
-				is_scrolling = 1;
-				scroll_to = pry - 120;
-			}
-			if (is_scrolling) {
+			oam_index = 64;
+			//pad0 = pad_poll (0);
+			get_pad_once ();
+			free_frame = 0;
+			
+			// Move camera?
+			if (autoscroll) {
+				autoscroll --;
 				scroll_advance (2);
-				if (cam_pos <= scroll_to) is_scrolling = 0;
+			} else if (pkill == 0) {
+				if (ppossee && pry < cam_pos + 120) {
+					is_scrolling = 1;
+					scroll_to = pry - 120;
+				}
+				if (is_scrolling) {
+					scroll_advance (2);
+					if (cam_pos <= scroll_to) is_scrolling = 0;
+				}
 			}
+		
+
+			enems_spawn ();
+			player_move ();
+			player_render ();
+			enems_do ();
+			bullets_do ();
+					
+			oam_hide_rest (oam_index);
 		}
 
-		enems_spawn ();
-		player_move ();
-		player_render ();
-		enems_do ();
-				
-		oam_hide_rest (oam_index);
-		
 		*ul = NT_UPD_EOF;
 		//*((unsigned char*)0x2001) = 0x1e;
 		
 		ppu_wait_nmi ();
 		
 		//*((unsigned char*)0x2001) = 0x1f;
+
+		if (pkill && pry < cam_pos) break;
+
+		if (pad_once & PAD_START) textwintest ();
 	}
 
 	music_stop ();
@@ -87,5 +112,13 @@ void game_loop (void) {
 	ppu_off ();
 
 	set_scroll_write (0);
+}
+
+void game_title (void) {
+
+}
+
+void game_over (void) {
+
 }
 

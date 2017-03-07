@@ -22,12 +22,12 @@ unsigned int gp_addr;
 unsigned char pad0, prevpad, pad_once, half_life, frame_counter, hl_proc;
 unsigned char oam_index;
 
-unsigned char gpit, gpjt, bit;
-unsigned char rda, rdb, rdc, rdt;
+unsigned char gpit, gpjt;
+unsigned char rda, rdb, rdc, rdd, rdt;
 signed char rds;
-unsigned char rdx;
+unsigned char rdx; //, rdy;
 signed int rdy;
-signed char rdmx, rdmy;
+//signed char rdmx, rdmy;
 signed int gpiit, gpijt;
 unsigned int uin;
 
@@ -64,7 +64,6 @@ signed char pvx, pvy;
 unsigned char prx, poxx;
 signed int pry;
 unsigned char psprid, pfacing, pkill, pbutt;
-unsigned char pjb, pj, pctj, ppossee, pgotten;
 signed char ptgmx;
 unsigned char ptx1, ptx2, pty1, pty2;	// For pixel collisions
 unsigned char plives, plife;
@@ -91,10 +90,24 @@ unsigned char enx [ENEMS_MAX];
 unsigned char encx;
 unsigned int eny [ENEMS_MAX];
 signed char enmx [ENEMS_MAX], enmy [ENEMS_MAX];
-unsigned char enx1 [ENEMS_MAX], enx2 [ENEMS_MAX];
+unsigned char enx1 [ENEMS_MAX], enx2 [ENEMS_MAX], enct [ENEMS_MAX];
 signed char envx, envy;
+
+#define ENMAXCT enx1
+#define ENSTATE enx2
+#define ENFREQ enx1
 
 // Enems slots (stack)
 
 unsigned char ensloti;
 unsigned char enslots [ENEMS_MAX];
+
+// Bullets
+
+unsigned char bit;
+unsigned int bpy;
+
+// Bullets slots (stack)
+
+unsigned char bsloti;
+unsigned char bslots [BULLETS_MAX];
