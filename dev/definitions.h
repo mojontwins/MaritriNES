@@ -69,8 +69,8 @@
 	#define EST_NORMAL 					0
 
 // Horizontal
-	#define PLAYER_AX					6
-	#define PLAYER_RX					4
+	#define PLAYER_AX					4
+	#define PLAYER_RX					3
 	#define PLAYER_VX_MAX				40
 	#define PLAYER_VX_REBOUND			64
 	#define PLAYER_VX_MIN 				(PLAYER_AX << 2)
