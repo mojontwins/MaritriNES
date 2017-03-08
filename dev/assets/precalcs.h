@@ -35,3 +35,7 @@ const signed char enems_lut_falling [] = {
 const signed char enems_lut_acceleration [] = {
 	0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1
 };
+
+const unsigned char drop_fixed_times [] = {
+	0, 16, 0, 11
+};

@@ -5,7 +5,7 @@
 
 void player_init (void) {
 	prx = 124;
-	pry = 253*16;
+	pry = 253<<4;
 	px = prx << FIX_BITS;
 	py = pry << FIX_BITS;
 	pvx = pvy = 0;
@@ -29,6 +29,7 @@ void player_hit (void) {
 		pst = EST_FLICKER;
 		pct = 100;
 		plife --;
+		hud_update ();
 	} else {
 		pkill = 1;
 	}
@@ -75,7 +76,7 @@ void player_move (void) {
 		cm_two_points ();
 		rdy = ((pry - 1) & 0xf);
 		*((unsigned char *) 0xf1) = rdy;
-		if (rdy < 8 && ((at1 & 12) || (at2 & 12))) {
+		if (rdy < 6 && ((at1 & 12) || (at2 & 12))) {
 			pgotten = pvy = 0;
 			pry = (cy2 - 1) << 4;
 			py = pry << FIX_BITS;
@@ -180,7 +181,11 @@ void player_move (void) {
 	}
 	
 	// Kill player?
-	if (pry >= 220 + cam_pos) {pkill = 2;}
+	if (ntsc) {
+		if (pry >= 212 + cam_pos) pkill = 2;
+	} else {
+		if (pry >= 220 + cam_pos) pkill = 2;
+	}
 	
 	// Frame & sprite pos
 	if ((ppossee || pgotten) && pvy >= 0) {
@@ -199,7 +204,7 @@ void player_move (void) {
 void player_render (void) {
 	oam_meta_spr (
 		prx, pry - cam_pos - 1, 
-		4, 
+		40, 
 		(pst != EST_FLICKER || half_life) ? spr_player [psprid] : sprplempty
 	);
 }

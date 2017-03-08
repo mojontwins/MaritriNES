@@ -16,7 +16,7 @@ void hud_update (void) {
 	// It's about "erasing" a spot in the life meter.
 	// plife is already adjusted, so we know which sprite
 	// to clean
-	rdc = (life << 3)
+	rdc = (plife << 3);
 	oam_spr (8 + rdd, 24, 0, 0, 16 + rdd);
 	oam_spr (8 + rdd, 32, 0, 0, 20 + rdd);
 }

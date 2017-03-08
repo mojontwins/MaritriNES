@@ -250,6 +250,10 @@ void __fastcall__ set_scroll_write (unsigned int adr);
 
 void __fastcall__ set_attrib_write (unsigned int adr);
 
+// Text split
+
+void __fastcall__ text_split (void);
+
 #define PAD_A			0x01
 #define PAD_B			0x02
 #define PAD_SELECT		0x04

@@ -11,7 +11,8 @@
 #include "definitions.h"
 
 // Assets
-#include "assets/map0.h"
+#include "assets/map_lib.h"
+#include "assets/map_gym.h"
 #include "assets/palettes.h"
 #include "assets/tiledata.h"
 #include "assets/spritedata.h"
@@ -35,12 +36,15 @@
 
 // Engine functions
 
+#include "engine/general.h"
 #include "engine/printer.h"
 #include "engine/scroller_rle.h"
 #include "engine/gbuffer.h"
+#include "engine/hud.h"
 #include "engine/player.h"
 #include "engine/bullets.h"
 #include "engine/enems.h"
+#include "engine/text_split.h"
 #include "engine/game.h"
 
 void main (void) {
@@ -50,8 +54,9 @@ void main (void) {
 #else
 	level = 0;
 #endif	
-
-	ticks = ppu_system () ? 60 : 50;
+	
+	ntsc = ppu_system ();
+	ticks = ntsc ? 60 : 50;
 	halfticks = ticks >> 1;
 
 	bank_bg (0);

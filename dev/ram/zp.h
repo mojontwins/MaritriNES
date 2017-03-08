@@ -64,7 +64,6 @@ signed char pvx, pvy;
 unsigned char prx, poxx;
 signed int pry;
 unsigned char psprid, pfacing, pkill, pbutt;
-unsigned char pjb, pj, pctj, ppossee, pposseeo, pgotten;
 signed char ptgmx;
 unsigned char ptx1, ptx2, pty1, pty2;	// For pixel collisions
 unsigned char plives, plife;
@@ -91,8 +90,12 @@ unsigned char enx [ENEMS_MAX];
 unsigned char encx;
 unsigned int eny [ENEMS_MAX];
 signed char enmx [ENEMS_MAX], enmy [ENEMS_MAX];
-unsigned char enx1 [ENEMS_MAX], enx2 [ENEMS_MAX];
+unsigned char enx1 [ENEMS_MAX], enx2 [ENEMS_MAX], enct [ENEMS_MAX];
 signed char envx, envy;
+
+#define ENMAXCT enx1
+#define ENSTATE enx2
+#define ENFREQ enx1
 
 // Enems slots (stack)
 

@@ -5,12 +5,12 @@
 
 // 50 or 60 depending on TV system
 
-unsigned char ticks, halfticks;
+unsigned char ntsc, ticks, halfticks;
 
 // Flow
 
 unsigned char level, game_time, ticker, display;
-unsigned char flash, free_frame;
+unsigned char flash, free_frame, fskipct;
 
 // Update list for VBlank updates
 
@@ -48,3 +48,8 @@ unsigned char ba [BULLETS_MAX];
 // Player (cont)
 
 unsigned char pflickers;
+unsigned char pjb, pj, pctj, ppossee, pposseeo, pgotten;
+
+// Enems (cont)
+
+unsigned int eny1 [ENEMS_MAX];

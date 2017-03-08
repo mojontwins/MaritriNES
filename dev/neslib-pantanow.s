@@ -19,6 +19,7 @@
 	.export _memcpy,_memfill,_delay
 	.export _set_scroll_write
 	.export _set_attrib_write
+	.export _text_split
 
 
 ;NMI handler
@@ -1106,6 +1107,81 @@ _set_attrib_write:
 	sta <ATTRIB_WRITE+1
 	rts
 
+
+; void __fastcall__ text_split (void);
+_text_split:
+	lda #0
+	sta PPU_ADDR
+	lda #0
+	sta PPU_SCROLL
+	lda #0
+	sta PPU_SCROLL
+	lda #0
+	sta PPU_ADDR
+
+	;; wait scans
+	ldx #65
+	jsr Scanline_counter
+
+	lda #0
+	lda #0
+	lda #0
+
+	;; set scroll
+	lda #08
+	sta PPU_ADDR
+	lda #0
+	sta PPU_SCROLL
+	lda #0
+	sta PPU_SCROLL
+	lda #0
+	sta PPU_ADDR
+
+	;; wait scans
+	ldx #128
+	jsr Scanline_counter
+
+	;; set scroll
+	lda #0
+	sta PPU_ADDR
+	sta PPU_ADDR
+	lda #0
+	sta PPU_SCROLL
+	lda #0
+	sta PPU_SCROLL
+	lda <PPU_CTRL_VAR
+	sta PPU_CTRL
+
+	rts
+
+;load x with amount of scanlines to wait, should not be zero
+
+Scanline_counter:
+
+   ldy #11   ;2 (not included in cycle count till end)
+@1:
+   nop ; 2
+   nop ; 2
+   dey   ; 2
+;branch not taken requires two machine cycles. Add one if the branch is taken
+   bne @1   ;3 (2 on last loop) =9*11-1...98
+
+   txa ; 2 = 100
+   lsr a ; 2 = 102 (set carry half of the time)
+   bcc @2 ;2 or 3 (depending if branch taken) = 104/5
+@2:
+   nop ; 2 = 106/7
+   dex   ; 2 = 108/9
+   bne Scanline_counter ;3 (2 on last loop) = 111/12
+      ; +2 (ldy at the top)=113/114 (as stated, one less on last loop)
+      
+   rts ; overhead, not counted...6
+   
+; short about 1 cycle every 6 lines, not counting the overhead (113.5 vs 113.667)
+; examples
+;ldx #6 = 5.98 scanlines
+;ldx #60 = 59.90 scanlines
+;ldx #240 = 239.64 scanlines	
 
 palBrightTableL:
 	.byte <palBrightTable0,<palBrightTable1,<palBrightTable2
